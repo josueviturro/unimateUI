@@ -1,0 +1,52 @@
+.track_progress_bar {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color_surface_sunken);
+  border-radius: var(--radius_pill);
+}
+
+.track_size_thin {
+  height: 4px;
+}
+
+.track_size_thick {
+  height: 8px;
+}
+
+.fill_progress_bar {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 300ms ease;
+}
+
+.fill_gradient {
+  background: linear-gradient(90deg, var(--color_accent_primary), var(--color_accent_secondary));
+}
+
+.fill_vram_normal {
+  background: var(--color_accent_secondary);
+}
+
+.fill_vram_high {
+  background: var(--color_accent_warning);
+}
+
+.fill_vram_critical {
+  background: var(--color_accent_danger);
+}
+
+.fill_indeterminate {
+  position: absolute;
+  width: 35%;
+  animation: animation_progress_slide 1.4s ease-in-out infinite;
+}
+
+@keyframes animation_progress_slide {
+  0% {
+    left: -35%;
+  }
+  100% {
+    left: 100%;
+  }
+}

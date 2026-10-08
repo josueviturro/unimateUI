@@ -1,0 +1,30 @@
+.dialog_confirm {
+  width: min(440px, calc(100vw - 32px));
+  padding: var(--space_extra_large);
+  background: var(--color_surface_docked);
+  color: var(--color_text_primary);
+  border: 1px solid var(--color_border_strong);
+  border-radius: var(--radius_large);
+  box-shadow: var(--shadow_overlay);
+}
+
+.dialog_confirm::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.text_dialog_title {
+  margin: 0 0 var(--space_medium);
+  font-size: var(--font_size_headline_small);
+}
+
+.text_dialog_body {
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_body_small);
+}
+
+.container_dialog_actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space_small);
+  margin-top: var(--space_extra_large);
+}

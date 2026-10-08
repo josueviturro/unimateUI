@@ -1,0 +1,94 @@
+.button_action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space_small);
+  border: 1px solid transparent;
+  border-radius: var(--radius_small);
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background var(--transition_fast), border-color var(--transition_fast), color var(--transition_fast);
+}
+
+.button_action:disabled,
+.button_link_disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button_action:focus-visible {
+  outline: 1px solid var(--color_accent_secondary);
+  outline-offset: 2px;
+}
+
+.button_size_small {
+  height: 28px;
+  padding: 0 var(--space_medium);
+  font-size: var(--font_size_label_medium);
+}
+
+.button_size_medium {
+  height: 34px;
+  padding: 0 var(--space_large);
+  font-size: var(--font_size_body_small);
+}
+
+.button_size_large {
+  height: 44px;
+  padding: 0 var(--space_extra_large);
+  font-size: var(--font_size_body_large);
+  font-weight: 600;
+}
+
+.button_full_width {
+  width: 100%;
+}
+
+.button_variant_primary {
+  background: var(--color_accent_primary);
+  color: var(--color_text_on_accent);
+  font-weight: 600;
+}
+
+.button_variant_primary:hover {
+  background: var(--color_accent_primary_hover);
+}
+
+.button_variant_secondary {
+  background: var(--color_surface_raised);
+  border-color: var(--color_border_default);
+  color: var(--color_text_primary);
+}
+
+.button_variant_secondary:hover {
+  background: var(--color_surface_hover);
+}
+
+.button_variant_danger {
+  background: var(--color_accent_danger_soft);
+  border-color: var(--color_accent_danger);
+  color: #fca5a5;
+}
+
+.button_variant_danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.button_variant_ghost {
+  background: transparent;
+  color: var(--color_text_secondary);
+}
+
+.button_variant_ghost:hover {
+  background: var(--color_surface_raised);
+  color: var(--color_text_primary);
+}
+
+.icon_button_symbol {
+  display: inline-flex;
+  font-size: 1.05em;
+  line-height: 1;
+}

@@ -1,0 +1,91 @@
+.sidebar_bone_hierarchy {
+  display: flex;
+  flex-direction: column;
+  width: var(--size_sidebar_width);
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: var(--space_large) var(--space_small);
+  background: var(--color_surface_docked);
+  border-right: 1px solid var(--color_border_default);
+}
+
+.text_sidebar_title {
+  margin: 0 var(--space_small) var(--space_medium);
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_small);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text_sidebar_hint {
+  margin: 0 var(--space_small);
+  color: var(--color_text_disabled);
+  font-size: var(--font_size_body_small);
+}
+
+.container_sidebar_asset {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 var(--space_small) var(--space_medium);
+  padding: var(--space_small) var(--space_medium);
+  border-left: 2px solid var(--color_accent_primary);
+  background: var(--color_surface_raised);
+  border-radius: 0 var(--radius_small) var(--radius_small) 0;
+}
+
+.text_sidebar_asset_name {
+  font-weight: 600;
+}
+
+.text_sidebar_joint_count {
+  color: var(--color_text_secondary);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+}
+
+.list_bone_tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item_bone_tree {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding-right: var(--space_small);
+  border-radius: var(--radius_small);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.item_bone_tree:hover {
+  background: var(--color_surface_raised);
+}
+
+.icon_bone_branch {
+  color: var(--color_accent_primary);
+  opacity: 0.7;
+}
+
+.text_bone_raw_name {
+  color: var(--color_text_primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text_bone_label {
+  color: var(--color_text_secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item_bone_flagged .icon_bone_branch,
+.item_bone_flagged .text_bone_raw_name {
+  color: var(--color_accent_warning);
+}

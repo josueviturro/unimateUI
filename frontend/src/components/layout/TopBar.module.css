@@ -1,0 +1,93 @@
+.bar_top_application {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space_large);
+  height: var(--size_top_bar_height);
+  padding: 0 var(--space_large);
+  background: var(--color_surface_sunken);
+  border-bottom: 1px solid var(--color_border_default);
+}
+
+.container_brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space_medium);
+  flex-shrink: 0;
+}
+
+.icon_brand_logo {
+  color: var(--color_accent_primary);
+  font-size: 1.3rem;
+}
+
+.text_brand_name {
+  font-size: var(--font_size_headline_small);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.badge_license {
+  padding: 2px 8px;
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  border-radius: var(--radius_small);
+  color: var(--color_accent_warning);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+  cursor: help;
+}
+
+.container_system_indicators {
+  display: flex;
+  align-items: center;
+  gap: var(--space_medium);
+  min-width: 0;
+}
+
+.container_comfyui_warning {
+  padding: 4px 10px;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: var(--radius_small);
+  background: var(--color_accent_warning_soft);
+  color: var(--color_accent_warning);
+  font-size: var(--font_size_label_medium);
+}
+
+.button_active_job {
+  display: flex;
+  align-items: center;
+  gap: var(--space_small);
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.text_queue_count {
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_small);
+}
+
+.container_vram_meter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 260px;
+  padding: 4px 10px;
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_small);
+  background: var(--color_surface_docked);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+}
+
+.row_vram_labels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space_small);
+  white-space: nowrap;
+}
+
+.text_vram_free {
+  color: var(--color_accent_primary);
+}

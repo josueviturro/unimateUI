@@ -1,0 +1,58 @@
+.container_model_viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
+  background: var(--color_surface_ground);
+}
+
+.label_viewer_overlay {
+  position: absolute;
+  left: var(--space_small);
+  bottom: var(--space_small);
+  padding: 2px 8px;
+  border: 1px solid var(--color_border_strong);
+  border-radius: var(--radius_small);
+  background: rgba(22, 27, 34, 0.95);
+  color: var(--color_accent_primary);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+  pointer-events: none;
+}
+
+.label_viewer_hint {
+  position: absolute;
+  right: var(--space_small);
+  top: var(--space_small);
+  color: var(--color_text_disabled);
+  font-size: var(--font_size_label_small);
+  pointer-events: none;
+}
+
+.text_viewer_error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_body_small);
+}
+
+.button_reframe_view {
+  position: absolute;
+  right: var(--space_small);
+  bottom: var(--space_small);
+  width: 28px;
+  height: 28px;
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid var(--color_border_strong);
+  border-radius: var(--radius_small);
+  color: var(--color_text_secondary);
+  cursor: pointer;
+}
+
+.button_reframe_view:hover {
+  color: var(--color_accent_primary);
+  border-color: var(--color_accent_primary);
+}

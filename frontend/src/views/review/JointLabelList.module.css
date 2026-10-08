@@ -1,0 +1,101 @@
+.panel_joint_labels {
+  min-height: 0;
+}
+
+.text_flagged_count {
+  color: var(--color_accent_warning);
+  font-size: var(--font_size_label_medium);
+}
+
+.label_flagged_filter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_medium);
+}
+
+.text_joint_list_help {
+  margin: 0;
+  padding: var(--space_medium) var(--space_large);
+  border-bottom: 1px solid var(--color_border_default);
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_medium);
+}
+
+.list_joint_labels {
+  max-height: 520px;
+  margin: 0;
+  padding: var(--space_small);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.item_joint_label {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) minmax(140px, 46%);
+  align-items: center;
+  gap: var(--space_small);
+  margin-bottom: var(--space_extra_small);
+  padding: var(--space_small) var(--space_medium);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_small);
+  background: var(--color_surface_ground);
+}
+
+.item_joint_flagged {
+  border-color: rgba(245, 158, 11, 0.55);
+  background: var(--color_accent_warning_soft);
+}
+
+.icon_joint_state {
+  color: var(--color_accent_primary);
+}
+
+.item_joint_flagged .icon_joint_state {
+  color: var(--color_accent_warning);
+}
+
+.container_joint_names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.text_joint_raw_name {
+  overflow: hidden;
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_medium);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text_joint_detail {
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_small);
+}
+
+.item_joint_flagged .text_joint_detail {
+  color: var(--color_accent_warning);
+}
+
+.input_joint_label {
+  height: 30px;
+  padding: 0 var(--space_small);
+  background: var(--color_surface_docked);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_small);
+  color: var(--color_text_primary);
+  font-size: var(--font_size_body_small);
+}
+
+.input_joint_label:focus {
+  outline: none;
+  border-color: var(--color_accent_secondary);
+}
+
+.text_joint_list_empty {
+  padding: var(--space_large);
+  color: var(--color_accent_primary);
+}

@@ -1,0 +1,17 @@
+.container_application {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.container_workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.container_main_view {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}

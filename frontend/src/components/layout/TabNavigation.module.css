@@ -1,0 +1,32 @@
+.bar_tab_navigation {
+  display: flex;
+  align-items: stretch;
+  height: var(--size_tab_bar_height);
+  padding: 0 var(--space_small);
+  background: var(--color_surface_docked);
+  border-bottom: 1px solid var(--color_border_default);
+  overflow-x: auto;
+}
+
+.button_navigation_tab {
+  padding: 0 var(--space_large);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color_text_secondary);
+  cursor: pointer;
+  font-size: var(--font_size_body_small);
+  white-space: nowrap;
+  transition: color var(--transition_fast), background var(--transition_fast);
+}
+
+.button_navigation_tab:hover {
+  color: var(--color_text_primary);
+  background: var(--color_surface_raised);
+}
+
+.button_tab_active {
+  color: var(--color_accent_primary);
+  border-bottom-color: var(--color_accent_primary);
+  background: var(--color_surface_raised);
+}

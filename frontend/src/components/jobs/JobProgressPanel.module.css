@@ -1,0 +1,185 @@
+.panel_job_progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space_large);
+  padding: var(--space_extra_large);
+  background: var(--color_surface_docked);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_large);
+}
+
+.header_job_progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space_medium);
+}
+
+.container_job_title {
+  display: flex;
+  align-items: center;
+  gap: var(--space_medium);
+  min-width: 0;
+}
+
+.text_job_title {
+  margin: 0;
+  font-size: var(--font_size_headline_small);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.container_job_actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space_medium);
+}
+
+.text_job_phase {
+  color: var(--color_text_secondary);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_medium);
+}
+
+.container_job_progress_bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space_small);
+}
+
+.row_progress_labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color_text_secondary);
+  font-size: var(--font_size_label_small);
+}
+
+.text_progress_percent {
+  color: var(--color_accent_primary);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_body_small);
+  font-weight: 600;
+}
+
+.container_log_console {
+  background: var(--color_surface_sunken);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_medium);
+  overflow: hidden;
+}
+
+.header_log_console {
+  display: flex;
+  align-items: center;
+  gap: var(--space_medium);
+  padding: var(--space_small) var(--space_medium);
+  border-bottom: 1px solid var(--color_border_default);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+  color: var(--color_text_secondary);
+}
+
+.container_console_dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot_console_red,
+.dot_console_amber,
+.dot_console_green {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dot_console_red {
+  background: #e06c75;
+}
+
+.dot_console_amber {
+  background: #d19a66;
+}
+
+.dot_console_green {
+  background: #98c379;
+}
+
+.text_console_title {
+  flex: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.text_console_autoscroll {
+  color: var(--color_accent_primary);
+}
+
+.body_log_console {
+  overflow-y: auto;
+  padding: var(--space_medium);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_medium);
+  line-height: 1.6;
+}
+
+.body_console_compact {
+  height: 180px;
+}
+
+.body_console_tall {
+  height: 280px;
+}
+
+.row_log_line {
+  display: flex;
+  gap: var(--space_small);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.text_log_time {
+  flex-shrink: 0;
+  color: var(--color_text_disabled);
+}
+
+.text_log_message {
+  color: #c9d1d9;
+}
+
+.log_level_step .text_log_message {
+  color: var(--color_accent_secondary);
+  font-weight: 600;
+}
+
+.log_level_command .text_log_message {
+  color: var(--color_text_secondary);
+}
+
+.log_level_warning .text_log_message {
+  color: var(--color_accent_warning);
+}
+
+.log_level_error .text_log_message {
+  color: #f87171;
+}
+
+.log_level_success .text_log_message {
+  color: var(--color_accent_primary);
+}
+
+.cursor_console_blink {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  margin-top: 4px;
+  background: var(--color_accent_primary);
+  animation: animation_cursor_blink 1s steps(1) infinite;
+}
+
+@keyframes animation_cursor_blink {
+  50% {
+    opacity: 0;
+  }
+}

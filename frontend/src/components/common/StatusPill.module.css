@@ -1,0 +1,64 @@
+.pill_status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 10px;
+  border: 1px solid;
+  border-radius: var(--radius_large);
+  font-family: var(--font_family_monospace);
+  font-size: var(--font_size_label_small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.dot_status_led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.dot_status_pulsing {
+  animation: animation_led_pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes animation_led_pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.pill_tone_success {
+  color: var(--color_accent_primary);
+  border-color: rgba(16, 185, 129, 0.45);
+  background: var(--color_accent_primary_soft);
+}
+
+.pill_tone_warning {
+  color: var(--color_accent_warning);
+  border-color: rgba(245, 158, 11, 0.45);
+  background: var(--color_accent_warning_soft);
+}
+
+.pill_tone_danger {
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.45);
+  background: var(--color_accent_danger_soft);
+}
+
+.pill_tone_info {
+  color: var(--color_accent_secondary);
+  border-color: rgba(6, 182, 212, 0.45);
+  background: var(--color_accent_secondary_soft);
+}
+
+.pill_tone_neutral {
+  color: var(--color_text_secondary);
+  border-color: var(--color_border_default);
+  background: var(--color_surface_docked);
+}

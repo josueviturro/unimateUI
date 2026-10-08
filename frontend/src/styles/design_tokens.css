@@ -1,0 +1,114 @@
+/* Global design tokens (from Stitch's "Synthetic Kinematics DCC") and base reset.
+   Component styles live in *.module.css files and only use these variables. */
+
+:root {
+  /* Surfaces, darkest to lightest */
+  --color_surface_sunken: #090d12;
+  --color_surface_ground: #0d1117;
+  --color_surface_docked: #161b22;
+  --color_surface_raised: #21262d;
+  --color_surface_hover: #30363d;
+
+  /* Lines */
+  --color_border_default: #30363d;
+  --color_border_strong: #484f58;
+
+  /* Text */
+  --color_text_primary: #f0f6fc;
+  --color_text_secondary: #8b949e;
+  --color_text_disabled: #484f58;
+  --color_text_on_accent: #0d1117;
+
+  /* Accents and status */
+  --color_accent_primary: #10b981;
+  --color_accent_primary_hover: #34d399;
+  --color_accent_primary_soft: rgba(16, 185, 129, 0.12);
+  --color_accent_secondary: #06b6d4;
+  --color_accent_secondary_soft: rgba(6, 182, 212, 0.12);
+  --color_accent_warning: #f59e0b;
+  --color_accent_warning_soft: rgba(245, 158, 11, 0.1);
+  --color_accent_danger: #ef4444;
+  --color_accent_danger_soft: rgba(239, 68, 68, 0.12);
+
+  /* Typography */
+  --font_family_interface: "Geist", "Segoe UI", system-ui, sans-serif;
+  --font_family_monospace: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  --font_size_headline_large: 1.5rem;
+  --font_size_headline_medium: 1.25rem;
+  --font_size_headline_small: 1rem;
+  --font_size_body_large: 0.9375rem;
+  --font_size_body_medium: 0.875rem;
+  --font_size_body_small: 0.8125rem;
+  --font_size_label_medium: 0.75rem;
+  --font_size_label_small: 0.6875rem;
+
+  /* Spacing (4px grid) */
+  --space_extra_small: 4px;
+  --space_small: 8px;
+  --space_medium: 12px;
+  --space_large: 16px;
+  --space_extra_large: 24px;
+  --space_double_extra_large: 32px;
+
+  /* Shapes */
+  --radius_small: 4px;
+  --radius_medium: 6px;
+  --radius_large: 8px;
+  --radius_pill: 9999px;
+
+  /* Layout */
+  --size_top_bar_height: 52px;
+  --size_tab_bar_height: 40px;
+  --size_sidebar_width: 240px;
+  --shadow_overlay: 0 4px 12px rgba(0, 0, 0, 0.65);
+  --transition_fast: 120ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color_surface_ground);
+  color: var(--color_text_primary);
+  font-family: var(--font_family_interface);
+  font-size: var(--font_size_body_medium);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--color_accent_secondary);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color_surface_hover);
+  border-radius: var(--radius_pill);
+  border: 2px solid var(--color_surface_ground);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
