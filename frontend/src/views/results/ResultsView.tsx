@@ -142,8 +142,10 @@ export function ResultsView() {
             </div>
             <div className={styles.grid_variant_cards}>
               {caseEntry.variants.map((variantItem, variantIndex) => (
-                <VariantCard key={variantItem.sample_stem} variantLetter={VARIANT_LETTERS[variantIndex] ?? String(variantIndex + 1)}
-                  variant={variantItem} prompt={caseEntry.prompt} exportScale={exportScale} onToggleFavorite={handleToggleFavorite} />
+                <VariantCard key={variantItem.sample_stem} runName={runDetail.run_name}
+                  variantLetter={VARIANT_LETTERS[variantIndex] ?? String(variantIndex + 1)}
+                  variant={variantItem} prompt={caseEntry.prompt} exportScale={exportScale} onToggleFavorite={handleToggleFavorite}
+                  onVariantChanged={() => void runResource.reload()} />
               ))}
             </div>
           </section>

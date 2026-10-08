@@ -17,6 +17,10 @@ MODE_SUBDIRECTORIES = ("motion_expand", "inbetween", "motion_edit")
 SAMPLE_STEM_PATTERN = re.compile(r"^(?P<case>.+)-rep_(?P<repetition>\d+)-(?P<object_index>\d+)$")
 ORIGINAL_SCALE_FOLDER = "animated_original"
 CANONICAL_FOLDER = "animated"
+# loops made from each export, named <sample stem>_loop.glb / .fbx
+LOOP_FOLDERS = {"canonical": "animated_loop", "original": "animated_original_loop"}
+EXPORT_FOLDERS = {"canonical": CANONICAL_FOLDER, "original": ORIGINAL_SCALE_FOLDER}
+LOOP_SUFFIX = "_loop"
 
 RUN_STATUS_RUNNING = "running"
 RUN_STATUS_COMPLETED = "completed"
@@ -147,6 +151,7 @@ def describe_run_detail(run_name: str) -> dict:
     run_summary = describe_run(run_dir)
     metadata = read_run_metadata(run_dir)
     favorite_stems = set(metadata.get("favorites", []))
+    loop_reports = metadata.get("loops", {})
     manifest_dir = find_manifest_dir(run_dir)
     manifest = read_json_file(manifest_dir / "manifest.json", {}) if manifest_dir else {}
     manifest_runs = (manifest or {}).get("runs") or [{}]
@@ -178,10 +183,40 @@ def describe_run_detail(run_name: str) -> dict:
             "original_glb_url": build_file_url(manifest_dir / ORIGINAL_SCALE_FOLDER / f"{sample_stem}.glb"),
             "original_fbx_url": build_file_url(manifest_dir / ORIGINAL_SCALE_FOLDER / f"{sample_stem}.fbx"),
             "favorite": sample_stem in favorite_stems,
+            **describe_variant_loops(manifest_dir, sample_stem, loop_reports),
         })
     for case_entry in cases_by_id.values():
         case_entry["variants"].sort(key=lambda variant_entry: variant_entry["repetition_index"])
     return {**run_summary, "cases": list(cases_by_id.values())}
+
+
+def loop_file_path(manifest_dir: Path, sample_stem: str, export_scale: str, file_extension: str) -> Path:
+    """Where the loop of one variant is written, per export scale."""
+    return manifest_dir / LOOP_FOLDERS[export_scale] / f"{sample_stem}{LOOP_SUFFIX}.{file_extension}"
+
+
+def loop_report_key(sample_stem: str, export_scale: str) -> str:
+    """Key of a loop report inside ui_run.json["loops"]."""
+    return f"{sample_stem}|{export_scale}"
+
+
+def describe_variant_loops(manifest_dir: Path, sample_stem: str, loop_reports: dict) -> dict:
+    """Loop file URLs and reports of one variant, for both export scales."""
+    variant_loops = {}
+    for export_scale in LOOP_FOLDERS:
+        loop_glb = loop_file_path(manifest_dir, sample_stem, export_scale, "glb")
+        variant_loops[f"{export_scale}_loop_glb_url"] = build_file_url(loop_glb)
+        variant_loops[f"{export_scale}_loop_fbx_url"] = build_file_url(loop_file_path(manifest_dir, sample_stem, export_scale, "fbx"))
+        variant_loops[f"{export_scale}_loop_report"] = (loop_reports.get(loop_report_key(sample_stem, export_scale))
+                                                        if loop_glb.is_file() else None)
+    return variant_loops
+
+
+def save_loop_report(run_dir: Path, sample_stem: str, export_scale: str, loop_report: dict) -> None:
+    """Remember the chosen cycle and settings of a loop in ui_run.json."""
+    metadata = read_run_metadata(run_dir)
+    metadata.setdefault("loops", {})[loop_report_key(sample_stem, export_scale)] = loop_report
+    write_run_metadata(run_dir, metadata)
 
 
 def toggle_favorite(run_name: str, sample_stem: str, favorite: bool) -> List[str]:
@@ -208,9 +243,9 @@ def storage_summary() -> dict:
     """Disk usage of all runs and how many exported files exist."""
     if not SAMPLES_DIR.is_dir():
         return {"total_bytes": 0, "run_count": 0, "exported_file_count": 0}
+    exported_folders = {CANONICAL_FOLDER, ORIGINAL_SCALE_FOLDER, *LOOP_FOLDERS.values()}
     exported_files = [file_path for file_path in SAMPLES_DIR.rglob("*")
-                      if file_path.suffix in (".glb", ".fbx") and file_path.parent.name in
-                      (CANONICAL_FOLDER, ORIGINAL_SCALE_FOLDER)]
+                      if file_path.suffix in (".glb", ".fbx") and file_path.parent.name in exported_folders]
     return {
         "total_bytes": folder_size_bytes(SAMPLES_DIR),
         "run_count": sum(1 for run_dir in SAMPLES_DIR.iterdir() if run_dir.is_dir()),

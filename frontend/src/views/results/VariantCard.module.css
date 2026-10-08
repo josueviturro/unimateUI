@@ -228,3 +228,58 @@
   aspect-ratio: auto;
   min-height: 420px;
 }
+
+.button_loop_toggle {
+  padding: 4px 10px;
+  background: var(--color_surface_raised);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_small);
+  color: var(--color_accent_primary);
+  cursor: pointer;
+  font-size: var(--font_size_label_medium);
+}
+
+.button_loop_toggle:hover,
+.button_loop_toggle_active {
+  border-color: var(--color_accent_primary);
+  background: var(--color_accent_primary_soft);
+}
+
+.container_playback_mode {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--color_surface_ground);
+  border: 1px solid var(--color_border_default);
+  border-radius: var(--radius_small);
+}
+
+.button_playback_mode {
+  flex: 1;
+  padding: 4px 10px;
+  background: none;
+  border: none;
+  border-radius: var(--radius_small);
+  color: var(--color_text_secondary);
+  cursor: pointer;
+  font-size: var(--font_size_label_medium);
+}
+
+.button_playback_mode_active {
+  background: var(--color_surface_raised);
+  color: var(--color_accent_primary);
+  font-weight: 600;
+}
+
+/* Loop view: only the 3D viewer (the skeleton video belongs to the original clip) */
+.grid_variant_previews_single {
+  grid-template-columns: 1fr;
+}
+
+.grid_variant_previews_single .pane_variant_preview {
+  aspect-ratio: 2 / 1;
+}
+
+.card_variant_expanded .grid_variant_previews_single {
+  grid-template-columns: 1fr;
+}

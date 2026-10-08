@@ -113,6 +113,7 @@ Close ComfyUI, Unreal or anything else using the GPU before generating. A yellow
    - Each variant shows the skeleton video and the animated model on one timeline. **⛶ Ampliar** enlarges it, and ⌖ re-frames the view.
    - Mark favorites, use "Generar más parecidas" (same prompt, new seed), and download GLB/FBX per variant or the whole run as a ZIP.
    - Export options: **Canónico** (centered, size-normalized, facing +Z, so rescale it in Unreal) or **escala original** (experimental: animates your uploaded file).
+   - **⟲ Loop**: turns a variant into a seamless loop. It finds the two most similar poses in the clip, cuts there and blends the seam. Options: **in place** (removes forward drift), minimum cycle length and blend frames. It takes a few seconds, doesn't use the GPU and saves `<variant>_loop.glb/.fbx` next to the original. Switch between "Clip original" and "Loop" in the card.
 5. **History.** All runs, with search and filters. You can open, relaunch (new seed), download or delete each one.
 
 Clips are **2 s, 60 frames, 30 fps**. To use one in Unreal, import the FBX as an animation for the character's skeleton.
@@ -126,6 +127,7 @@ Clips are **2 s, 60 frames, 30 fps**. To use one in Unreal, import the FBX as an
 | Runs | `outputs/samples/run_YYYYMMDD_HHMMSS/` (+ `ui_run.json`: parameters, status, favorites) |
 | Chained runs | inside the run, in `motion_expand/` |
 | Exports | `animated/` (canonical) and `animated_original/` (original scale) |
+| Loops | `animated_loop/` and `animated_original_loop/` |
 
 ### Troubleshooting
 
@@ -149,6 +151,7 @@ Clips are **2 s, 60 frames, 30 fps**. To use one in Unreal, import the FBX as an
 | `backend/command_builder.py` | Argument lists for each UniMate command (never shell strings) |
 | `backend/asset_library.py` / `run_library.py` | Characters and runs on disk |
 | `backend/system_status.py` | GPU/VRAM, checkpoint, ComfyUI detection |
+| `backend/tools/make_loop.py` | Blender script that cuts the best cycle and closes the seam |
 | `backend/routes/` | HTTP endpoints (`/api/...`, `/files/...`, SSE log stream) |
 | `frontend/src/views/` | The 5 screens |
 | `frontend/src/components/` | Shared components (buttons, panels, 3D viewer, job console) |
@@ -272,6 +275,7 @@ Antes de generar, cerrá ComfyUI, Unreal o cualquier otro programa que use la GP
    - Cada variante muestra el video del esqueleto y el modelo animado en una misma línea de tiempo. **⛶ Ampliar** la agranda y ⌖ vuelve a encuadrar.
    - Podés marcar favoritos, usar "Generar más parecidas" (mismo prompt, otra semilla) y descargar GLB/FBX por variante o la tanda entera en un ZIP.
    - Opciones de exportación: **Canónico** (centrado, tamaño normalizado, mirando a +Z, así que hay que reescalarlo en Unreal) o **escala original** (experimental: anima tu archivo subido).
+   - **⟲ Loop**: convierte una variante en un loop sin corte. Busca las dos poses más parecidas del clip, corta ahí y funde la unión. Opciones: **en el lugar** (quita el avance), duración mínima del ciclo y frames de fundido. Tarda unos segundos, no usa la GPU y guarda `<variante>_loop.glb/.fbx` al lado del original. En la tarjeta se cambia entre "Clip original" y "Loop".
 5. **Historial.** Todas las tandas, con búsqueda y filtros. Cada una se puede abrir, relanzar (con otra semilla), descargar o borrar.
 
 Los clips duran **2 s: 60 frames a 30 fps**. Para usar uno en Unreal, importá el FBX como animación sobre el esqueleto del personaje.
@@ -285,6 +289,7 @@ Los clips duran **2 s: 60 frames a 30 fps**. Para usar uno en Unreal, importá e
 | Tandas | `outputs/samples/run_AAAAMMDD_HHMMSS/` (+ `ui_run.json`: parámetros, estado, favoritos) |
 | Tandas encadenadas | dentro de la tanda, en `motion_expand/` |
 | Exportaciones | `animated/` (canónico) y `animated_original/` (escala original) |
+| Loops | `animated_loop/` y `animated_original_loop/` |
 
 ### Problemas comunes
 
@@ -308,6 +313,7 @@ Los clips duran **2 s: 60 frames a 30 fps**. Para usar uno en Unreal, importá e
 | `backend/command_builder.py` | Argumentos de cada comando de UniMate (nunca strings de shell) |
 | `backend/asset_library.py` / `run_library.py` | Personajes y tandas en disco |
 | `backend/system_status.py` | GPU/VRAM, checkpoint, detección de ComfyUI |
+| `backend/tools/make_loop.py` | Script de Blender que corta el mejor ciclo y cierra la unión |
 | `backend/routes/` | Endpoints HTTP (`/api/...`, `/files/...`, log en vivo por SSE) |
 | `frontend/src/views/` | Las 5 pantallas |
 | `frontend/src/components/` | Componentes compartidos (botones, paneles, visor 3D, consola de trabajos) |

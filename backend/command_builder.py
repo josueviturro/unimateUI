@@ -62,3 +62,17 @@ def build_animate_step(manifest_dir: Path, output_dir: Path, character_override:
         extra_environment["CHAR_PATH"] = to_repo_relative(character_override)
     return JobStep(label="Exportando GLB/FBX", command=command, progress_kind="animate", weight=1.0,
                    extra_environment=extra_environment, success_marker="BATCH DONE")
+
+
+def build_loop_step(source_glb: Path, output_glb: Path, output_fbx: Path, min_cycle_seconds: float,
+                    blend_frames: int, in_place: bool) -> JobStep:
+    """tools/make_loop.py: cuts the best cycle out of an animation and closes the seam (CPU only)."""
+    command = [str(VENV_PYTHON), "UI/backend/tools/make_loop.py",
+               "--input", to_repo_relative(source_glb),
+               "--output_glb", to_repo_relative(output_glb),
+               "--output_fbx", to_repo_relative(output_fbx),
+               "--min_cycle_seconds", str(min_cycle_seconds),
+               "--blend_frames", str(blend_frames)]
+    if in_place:
+        command.append("--in_place")
+    return JobStep(label="Creando loop", command=command, success_marker="LOOP_REPORT")

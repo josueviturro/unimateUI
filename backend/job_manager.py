@@ -26,6 +26,11 @@ JOB_STATUS_FAILED = "failed"
 JOB_STATUS_CANCELLED = "cancelled"
 FINISHED_STATUSES = {JOB_STATUS_COMPLETED, JOB_STATUS_FAILED, JOB_STATUS_CANCELLED}
 
+# GPU jobs (sampling, rig preprocessing, mesh export) run one at a time; quick CPU-only jobs
+# (e.g. making a loop) get their own queue so they never wait behind a generation.
+QUEUE_GPU = "gpu"
+QUEUE_CPU = "cpu"
+
 
 @dataclass
 class JobStep:
@@ -46,6 +51,7 @@ class Job:
     kind: str
     title: str
     steps: List[JobStep]
+    queue_name: str = QUEUE_GPU
     related: Dict[str, str] = field(default_factory=dict)
     on_finish: Optional[Callable[["Job"], None]] = None
     status: str = JOB_STATUS_QUEUED
@@ -66,6 +72,7 @@ class Job:
         return {
             "job_id": self.job_id,
             "kind": self.kind,
+            "queue_name": self.queue_name,
             "title": self.title,
             "status": self.status,
             "phase": self.phase,
@@ -107,27 +114,27 @@ def classify_log_level(line_text: str) -> str:
 
 
 class JobManager:
-    """Single-worker queue: GPU jobs never run in parallel."""
+    """One worker per queue: GPU jobs never run in parallel; CPU jobs run beside them."""
 
     def __init__(self) -> None:
-        """Start the background worker thread."""
+        """Start one background worker thread per queue."""
         self.jobs_by_id: Dict[str, Job] = {}
-        self.pending_jobs: "queue.Queue[Job]" = queue.Queue()
+        self.pending_jobs_by_queue: Dict[str, "queue.Queue[Job]"] = {QUEUE_GPU: queue.Queue(), QUEUE_CPU: queue.Queue()}
         self.state_lock = threading.Lock()
-        self.worker_thread = threading.Thread(target=self._worker_loop, daemon=True)
-        self.worker_thread.start()
+        for queue_name in self.pending_jobs_by_queue:
+            threading.Thread(target=self._worker_loop, args=(queue_name,), daemon=True).start()
 
     # ---- public API -------------------------------------------------------
 
     def submit(self, kind: str, title: str, steps: List[JobStep], related: Optional[Dict[str, str]] = None,
-               on_finish: Optional[Callable[[Job], None]] = None) -> Job:
-        """Queue a new job and return it."""
-        new_job = Job(job_id=uuid.uuid4().hex[:12], kind=kind, title=title, steps=steps,
+               on_finish: Optional[Callable[[Job], None]] = None, queue_name: str = QUEUE_GPU) -> Job:
+        """Queue a new job on the GPU (default) or CPU queue and return it."""
+        new_job = Job(job_id=uuid.uuid4().hex[:12], kind=kind, title=title, steps=steps, queue_name=queue_name,
                       related=related or {}, on_finish=on_finish)
         with self.state_lock:
             self.jobs_by_id[new_job.job_id] = new_job
         self._append_log(new_job, f"Trabajo en cola: {title}")
-        self.pending_jobs.put(new_job)
+        self.pending_jobs_by_queue[queue_name].put(new_job)
         return new_job
 
     def get_job(self, job_id: str) -> Optional[Job]:
@@ -139,9 +146,10 @@ class JobManager:
         return sorted(self.jobs_by_id.values(), key=lambda listed_job: listed_job.created_at, reverse=True)
 
     def active_job(self) -> Optional[Job]:
-        """The running job, if any."""
-        return next((listed_job for listed_job in self.jobs_by_id.values()
-                     if listed_job.status == JOB_STATUS_RUNNING), None)
+        """The running job, if any (GPU jobs first)."""
+        running_jobs = [listed_job for listed_job in self.jobs_by_id.values() if listed_job.status == JOB_STATUS_RUNNING]
+        return next((running_job for running_job in running_jobs if running_job.queue_name == QUEUE_GPU),
+                    running_jobs[0] if running_jobs else None)
 
     def is_related_busy(self, related_key: str, related_value: str) -> bool:
         """True when an unfinished job targets the same asset/run."""
@@ -166,10 +174,10 @@ class JobManager:
 
     # ---- worker -----------------------------------------------------------
 
-    def _worker_loop(self) -> None:
-        """Take jobs from the queue forever, one at a time."""
+    def _worker_loop(self, queue_name: str) -> None:
+        """Take jobs from one queue forever, one at a time."""
         while True:
-            next_job = self.pending_jobs.get()
+            next_job = self.pending_jobs_by_queue[queue_name].get()
             if next_job.cancel_requested:
                 self._finish(next_job, JOB_STATUS_CANCELLED)
                 continue

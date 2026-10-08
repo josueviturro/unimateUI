@@ -4,11 +4,13 @@ import type {
   Annotation,
   AnnotationFacePair,
   AssetInfo,
+  ExportScale,
   GenerateRequest,
   GenerateResponse,
   JobStartedResponse,
   JobSummary,
   LogEntry,
+  LoopSettings,
   RunDetail,
   RunSummary,
   StorageSummary,
@@ -104,6 +106,10 @@ export const apiClient = {
   /** Export GLB/FBX for a run (canonical or original scale). */
   animateRun: (runName: string, useOriginalScale: boolean) =>
     sendJson<JobStartedResponse>(`/api/runs/${runName}/animate`, "POST", { original_scale: useOriginalScale }),
+
+  /** Turn one variant into a seamless loop (new GLB/FBX next to the original). */
+  createLoop: (runName: string, sampleStem: string, exportScale: ExportScale, loopSettings: LoopSettings) =>
+    sendJson<JobStartedResponse>(`/api/runs/${runName}/loop`, "POST", { sample_stem: sampleStem, scale: exportScale, ...loopSettings }),
 
   /** Same parameters as an earlier run, new seed. */
   relaunchRun: (runName: string) => sendJson<GenerateResponse>(`/api/runs/${runName}/relaunch`, "POST"),

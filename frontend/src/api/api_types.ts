@@ -115,6 +115,26 @@ export interface RunSummary {
   error_message: string | null;
 }
 
+export type ExportScale = "canonical" | "original";
+
+export interface LoopSettings {
+  min_cycle_seconds: number;
+  blend_frames: number;
+  in_place: boolean;
+}
+
+export interface LoopReport {
+  start_frame: number;
+  end_frame: number;
+  loop_frames: number;
+  loop_seconds: number;
+  blend_frames: number;
+  in_place: boolean;
+  seam_error_original_clip: number;
+  seam_error_chosen_cut: number;
+  settings?: LoopSettings;
+}
+
 export interface RunVariant {
   sample_stem: string;
   repetition_index: number;
@@ -125,6 +145,12 @@ export interface RunVariant {
   canonical_fbx_url: string | null;
   original_glb_url: string | null;
   original_fbx_url: string | null;
+  canonical_loop_glb_url: string | null;
+  canonical_loop_fbx_url: string | null;
+  canonical_loop_report: LoopReport | null;
+  original_loop_glb_url: string | null;
+  original_loop_fbx_url: string | null;
+  original_loop_report: LoopReport | null;
   favorite: boolean;
 }
 

@@ -1,5 +1,6 @@
 """Generation endpoints: generate, runs (tandas), favorites, re-export, relaunch, ZIP, delete."""
 
+import json
 import random
 import re
 import tempfile
@@ -16,17 +17,21 @@ from starlette.background import BackgroundTask
 from app_settings import (MAX_CFG_SCALE, MAX_CHAINED_PROMPTS, MAX_PROMPT_LENGTH, MAX_REPETITIONS, MIN_CFG_SCALE,
                           MIN_REPETITIONS, SAMPLES_DIR)
 from asset_library import ASSET_STATUS_READY, describe_asset, find_asset_dir, find_source_file, is_example_asset
-from command_builder import build_animate_step, build_sample_step
-from job_manager import Job, job_manager
-from run_library import (CANONICAL_FOLDER, ORIGINAL_SCALE_FOLDER, delete_run, describe_run_detail, find_manifest_dir,
-                         find_run_dir, list_runs, new_run_name, read_run_metadata, record_job_result,
-                         storage_summary, toggle_favorite, write_run_metadata)
+from command_builder import build_animate_step, build_loop_step, build_sample_step
+from job_manager import QUEUE_CPU, Job, job_manager
+from run_library import (CANONICAL_FOLDER, EXPORT_FOLDERS, LOOP_FOLDERS, ORIGINAL_SCALE_FOLDER, delete_run,
+                         describe_run_detail, find_manifest_dir, find_run_dir, list_runs, loop_file_path,
+                         new_run_name, read_run_metadata, record_job_result, save_loop_report, storage_summary,
+                         toggle_favorite, write_run_metadata)
 
 run_router = APIRouter(prefix="/api")
 
 PROMPT_PREFIX = "An object"
 MAX_SEED = 2**31 - 1
 DEFAULT_EXPAND_OVERLAP = 10
+SAFE_STEM_PATTERN = re.compile(r"^[A-Za-z0-9_.-]{1,200}$")
+MIN_LOOP_CYCLE_SECONDS, MAX_LOOP_CYCLE_SECONDS = 0.3, 4.0
+MIN_LOOP_BLEND_FRAMES, MAX_LOOP_BLEND_FRAMES = 1, 30
 FORBIDDEN_PROMPT_CHARACTERS = re.compile(r"[\x00-\x1f\"`$\\]")
 
 
@@ -51,6 +56,15 @@ class FavoritePayload(BaseModel):
 class AnimatePayload(BaseModel):
     """Re-export options for a run."""
     original_scale: bool = False
+
+
+class LoopPayload(BaseModel):
+    """Settings to turn one variant into a seamless loop."""
+    sample_stem: str
+    scale: str = "canonical"           # which export to loop: "canonical" | "original"
+    min_cycle_seconds: float = 0.8
+    blend_frames: int = 12
+    in_place: bool = True
 
 
 class SimilarPayload(BaseModel):
@@ -107,6 +121,42 @@ def animate_run(run_name: str, animate_payload: AnimatePayload) -> dict:
     return {"job_id": animate_job.job_id}
 
 
+@run_router.post("/runs/{run_name}/loop")
+def make_variant_loop(run_name: str, loop_payload: LoopPayload) -> dict:
+    """Cut the best cycle of one variant and close the seam (quick CPU job, own queue)."""
+    run_dir = find_run_dir(run_name)
+    manifest_dir = find_manifest_dir(run_dir)
+    if loop_payload.scale not in EXPORT_FOLDERS:
+        raise HTTPException(status_code=400, detail="Escala inválida")
+    if not MIN_LOOP_CYCLE_SECONDS <= loop_payload.min_cycle_seconds <= MAX_LOOP_CYCLE_SECONDS:
+        raise HTTPException(status_code=400, detail=f"Ciclo mínimo entre {MIN_LOOP_CYCLE_SECONDS} y {MAX_LOOP_CYCLE_SECONDS} s")
+    if not MIN_LOOP_BLEND_FRAMES <= loop_payload.blend_frames <= MAX_LOOP_BLEND_FRAMES:
+        raise HTTPException(status_code=400, detail=f"Fundido entre {MIN_LOOP_BLEND_FRAMES} y {MAX_LOOP_BLEND_FRAMES} frames")
+    if manifest_dir is None or not SAFE_STEM_PATTERN.match(loop_payload.sample_stem):
+        raise HTTPException(status_code=404, detail="Variante no encontrada")
+    source_glb = manifest_dir / EXPORT_FOLDERS[loop_payload.scale] / f"{loop_payload.sample_stem}.glb"
+    if not source_glb.is_file():
+        raise HTTPException(status_code=409, detail="Primero exportá esta variante a GLB")
+    loop_settings = loop_payload.model_dump()
+
+    def remember_loop_report(finished_job: Job) -> None:
+        """Store the LOOP_REPORT line printed by make_loop.py in ui_run.json."""
+        report_line = next((log_entry["text"] for log_entry in reversed(finished_job.log_entries)
+                            if log_entry["text"].startswith("LOOP_REPORT ")), None)
+        if report_line:
+            save_loop_report(run_dir, loop_payload.sample_stem, loop_payload.scale,
+                             {**json.loads(report_line[len("LOOP_REPORT "):]), "settings": loop_settings})
+
+    loop_step = build_loop_step(source_glb,
+                                loop_file_path(manifest_dir, loop_payload.sample_stem, loop_payload.scale, "glb"),
+                                loop_file_path(manifest_dir, loop_payload.sample_stem, loop_payload.scale, "fbx"),
+                                loop_payload.min_cycle_seconds, loop_payload.blend_frames, loop_payload.in_place)
+    loop_job = job_manager.submit("loop", f"Loop de {loop_payload.sample_stem}", [loop_step],
+                                  related={"loop": f"{run_name}/{loop_payload.sample_stem}"},
+                                  on_finish=remember_loop_report, queue_name=QUEUE_CPU)
+    return {"job_id": loop_job.job_id}
+
+
 @run_router.post("/runs/{run_name}/relaunch")
 def relaunch_run(run_name: str) -> dict:
     """Same assets, prompts and settings as an earlier run, with a new seed."""
@@ -143,11 +193,16 @@ def download_run_zip(run_name: str, scale: str = "canonical") -> FileResponse:
     export_dir = manifest_dir / (ORIGINAL_SCALE_FOLDER if scale == "original" else CANONICAL_FOLDER) if manifest_dir else None
     if export_dir is None or not export_dir.is_dir():
         raise HTTPException(status_code=404, detail="Esta tanda todavía no tiene archivos exportados")
+    loop_dir = manifest_dir / LOOP_FOLDERS["original" if scale == "original" else "canonical"]
     temporary_zip = Path(tempfile.mkstemp(suffix=".zip")[1])
     with zipfile.ZipFile(temporary_zip, "w", zipfile.ZIP_DEFLATED) as zip_archive:
         for exported_file in export_dir.rglob("*"):
             if exported_file.is_file():
                 zip_archive.write(exported_file, exported_file.relative_to(export_dir).as_posix())
+        # loops go in their own folder inside the ZIP
+        for loop_file in (loop_dir.rglob("*") if loop_dir.is_dir() else []):
+            if loop_file.is_file():
+                zip_archive.write(loop_file, "loops/" + loop_file.relative_to(loop_dir).as_posix())
     return FileResponse(temporary_zip, filename=f"{run_name}_{scale}.zip", media_type="application/zip",
                         background=BackgroundTask(temporary_zip.unlink, missing_ok=True))
 
