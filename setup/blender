@@ -1,0 +1,10 @@
+#!/bin/bash
+# Shim: run "blender -b ... -P script.py -- args" with the venv's pip bpy module.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -P|--python) shift; SCRIPT="$1"; shift; break ;;
+    *) shift ;;
+  esac
+done
+exec "$HERE/python.exe" "$SCRIPT" "$@"
